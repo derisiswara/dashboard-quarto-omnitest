@@ -18,63 +18,9 @@ library(DT)
 
 ```{r}
 # Memuat data
-df1 <- read_excel("teskepribadian_export_20241021.xlsx")
+load("df1.RData")
 ```
 
-```{r}
-# Cek NA
-#sum(is.na(df1$Fakultas))
-#sum(is.na(df1$ProgramStudi))
-```
-
-```{r}
-# Delete data if "current_distress", "variable_response_inconsistency" >= 70
-df1 <- df1[!(df1$variable_response_inconsistency >= 70),]
-```
-
-
-```{r}
-# Preproses data - Hapus Kata Fakultas di Kolom Fakultas
-df1$Fakultas <- gsub("Fakultas ", "", df1$Fakultas)
-
-df1 <- df1 |>
-  # Delete duplicate rows if all column values are the same
-  distinct(.keep_all = TRUE)
-
-
-
-df1[df1$Fakultas == "Komunikasi Dan Ilmu Sosial","Fakultas"] <- "Komunikasi dan Ilmu Sosial"
-#  unique(df1$ProgramStudi)
-```
-
-
-```{r}
-## Cek jumlah duplikat nrp
-library(dplyr)
-
-# Cari NRP yang duplikat
-duplikat_nrp <- df1 %>%
-  group_by(nrp) %>%
-  filter(n() > 1) %>%
-  ungroup()
-```
-
-```{r}
-df1_raw <- df1
-# nrow(df1)
-# nrow(duplikat_nrp)
-# df1$nrp
-# df1$name
-# df1$faculty
-# tab(df1[,4:47]
-```
-
-```{r}
-#nrow(df1_raw)
-#nrow(df1)
-#length(unique(df1$faculty))
-#sum(!is.na(df1$faculty))
-```
 #  {.sidebar}
 
 Dasbor ini menampilkan statistik untuk:
@@ -112,11 +58,6 @@ Inventori Kepribadian OMNI (OMNI Personality Inventory) adalah kuesioner self-re
 [https://doi.org/10.1177/0734282905285789](https://doi.org/10.1177/0734282905285789)
 
 :::
-
-```{r}
-df1$faculty <- df1$Fakultas
-df1 <- df1[,-c(1,4)]
-```
 
 ```{r}
 df_Normal <- df1[,c(1:3,4:28)] # Tes Normal
@@ -242,58 +183,6 @@ knitr::include_graphics("omni.png")
 ```
 
 # Demografi
-```{r}
-# Seed untuk reproduksi hasil yang sama (opsional)
-set.seed(20250503)
-
-# Buat nama fakultas random
-random_fakultas_names <- c(
-  "Fakultas Sains dan Teknologi", "Fakultas Humaniora", "Fakultas Kedokteran",
-  "Fakultas Pertanian", "Fakultas Hukum", "Fakultas Psikologi", 
-  "Fakultas Seni Rupa"
-)
-
-# Acak urutan nama fakultas random
-fakultas <- unique(df1$faculty)
-random_fakultas <- sample(random_fakultas_names, length(fakultas), replace = FALSE)
-
-# Buat mapping dari fakultas asli ke fakultas acak
-fakultas_map <- setNames(random_fakultas, fakultas)
-```
-
-```{r}
-# Membuat nama-nama random untuk program studi
-# Contoh prefiks untuk jenjang pendidikan
-jenjang <- c("S1", "S2", "D3", "D4")
-
-# Contoh nama-nama program studi acak
-nama_program <- c(
-  "Biologi", "Matematika", "Fisika", "Kimia", "Astronomi", 
-  "Akuntansi", "Manajemen", "Ekonomi", "Bisnis Digital", "Keuangan",
-  "Hukum", "Ilmu Politik", "Administrasi Publik", "Hubungan Internasional",
-  "Psikologi", "Sosiologi", "Antropologi", "Arkeologi", "Filsafat",
-  "Sastra Indonesia", "Sastra Inggris", "Sastra Jepang", "Sastra Mandarin",
-  "Kedokteran", "Kedokteran Gigi", "Farmasi", "Kesehatan Masyarakat", "Keperawatan",
-  "Arsitektur", "Teknik Sipil", "Teknik Lingkungan", "Perencanaan Wilayah",
-  "Ilmu Komputer", "Sistem Informasi", "Teknik Informatika", "Data Science",
-  "Desain Grafis", "Desain Interior", "Seni Murni", "Fotografi", "Animasi",
-  "Pertanian", "Peternakan", "Kehutanan", "Perikanan", "Agribisnis",
-  "Pariwisata", "Perhotelan", "Kuliner", "Media dan Komunikasi", "Jurnalistik"
-)
-
-# Membuat kombinasi random untuk program studi
-program_studi <- unique(df1$ProgramStudi)
-sample_jenjang <- sample(jenjang, length(program_studi), replace = TRUE)
-sample_program <- sample(nama_program, length(program_studi), replace = TRUE)
-random_program_baru <- paste(sample_jenjang, sample_program)
-
-# Membuat mapping dengan nama-nama baru
-program_studi_map_baru <- setNames(random_program_baru, program_studi)
-
-# Terapkan mapping ke dataframe asli
-df1$faculty <- fakultas_map[df1$faculty]
-df1$ProgramStudi <- program_studi_map_baru[df1$ProgramStudi]  # atau program_studi_map_baru
-```
 
 ## Row {height="50%"}
 ### Column {width="50%"}
